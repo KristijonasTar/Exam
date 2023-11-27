@@ -10,18 +10,18 @@ import java.util.stream.Collectors;
 public class MyMainMunicipality implements Municipality {
     ArrayList<Person> citizens = new ArrayList<>();
     LocalDate now = LocalDate.now();
-    LocalDate adult = LocalDate.of(2005, 11, 27);
+    LocalDate adult = LocalDate.now().minusYears(18);
 
     @Override
     public void registerCitizen(Person person) throws IllegalCitizenException {
-         if (!citizens.contains(person)) {
+        if (!citizens.contains(person)) {
             citizens.add(person);
-        } else if ( person.getFirstName() == null || person.getLastName() == null
-                 || person.getFirstName().isEmpty() || person.getLastName().isEmpty()
-                 || person.getDateOfBirth() == null || person.getYearlyIncome() < 0
-                 || person.getDateOfBirth().isAfter(now)) {
-             throw new IllegalCitizenException(person);
-         }
+        } else if (person.getFirstName() == null || person.getLastName() == null
+                || person.getFirstName().isEmpty() || person.getLastName().isEmpty()
+                || person.getDateOfBirth() == null || person.getYearlyIncome() < 0
+                || person.getDateOfBirth().isAfter(now)) {
+            throw new IllegalCitizenException(person);
+        }
     }
 
     @Override
@@ -42,9 +42,8 @@ public class MyMainMunicipality implements Municipality {
     public boolean isRegisteredCitizen(Person person) {
         if (citizens.contains(person)) {
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     @Override
@@ -55,7 +54,13 @@ public class MyMainMunicipality implements Municipality {
 
     @Override
     public int countAdultCitizens() {
-        return 0;
+        int count = 0;
+        for (Person grownUp:citizens) {
+            if (grownUp.getDateOfBirth().isBefore(adult)){
+                count++;
+            }
+        }
+        return count;
     }
 
     @Override
@@ -65,16 +70,19 @@ public class MyMainMunicipality implements Municipality {
 
     @Override
     public Collection<Person> findCitizensBy(PersonPredicate personPredicate) {
+
         return null;
     }
 
     @Override
     public Collection<Person> getOrderedCitizens() {
-        return null;
+        return citizens.stream().sorted(Comparator.comparing(Person::getLastName)
+                .thenComparing(Person::getFirstName)).toList();
     }
 
     @Override
     public Map<Integer, List<Person>> groupByYearOfBirth() {
+//        return citizens.stream().sorted(Comparator.comparing(Person::getDateOfBirth)).toList();
         return null;
     }
 }
